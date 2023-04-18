@@ -5,14 +5,16 @@ import (
 
 	"portto/model"
 
+	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/gin-gonic/gin"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
 type Server struct {
-	DB  *gorm.DB
-	GIN *gin.Engine
+	DB        *gorm.DB
+	GIN       *gin.Engine
+	EthClient *ethclient.Client
 }
 
 func (s *Server) InitializeDB(Dbdriver, DbUser, DbPassword, DbPort, DbHost, DbName string) {
@@ -43,4 +45,12 @@ func (s *Server) InitializeDB(Dbdriver, DbUser, DbPassword, DbPort, DbHost, DbNa
 
 func (s *Server) InitializeGin() {
 	s.GIN = gin.Default()
+}
+
+func (s *Server) InitializeEthClient(rpcURL string) {
+	var err error
+	s.EthClient, err = ethclient.Dial(rpcURL)
+	if err != nil {
+		panic(err.Error())
+	}
 }

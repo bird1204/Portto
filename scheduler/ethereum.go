@@ -12,13 +12,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func ScanBlocks(startBlock uint64, db *gorm.DB, rpcURL string) error {
-	// Create a new Ethereum client using the Geth client package.
-	client, err := ethclient.Dial(rpcURL)
-	if err != nil {
-		return err
-	}
-
+func ScanBlocks(client *ethclient.Client, startBlock uint64, db *gorm.DB) error {
 	// Get the latest block number.
 	latestBlockNumber, err := client.BlockNumber(context.Background())
 	if err != nil {
