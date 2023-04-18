@@ -28,7 +28,7 @@ func main() {
 
 		// Query the database for the lastest n blocks.
 		var blocks []model.Block
-		server.DB.Order("block_num desc").Limit(limit).Find(&blocks)
+		server.DB.Order("id desc").Limit(limit).Find(&blocks)
 
 		// Return the blocks as JSON.
 		ctx.JSON(200, gin.H{
