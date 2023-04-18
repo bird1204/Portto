@@ -30,11 +30,24 @@ func main() {
 		var blocks []model.Block
 		server.DB.Order("id desc").Limit(limit).Find(&blocks)
 
+		// Create responses
+		var response []map[string]interface{}
+		for _, block := range blocks {
+			item := map[string]interface{}{
+				"block_num":   block.Id,
+				"block_hash":  block.Hash,
+				"block_time":  block.Timestamp,
+				"parent_hash": block.ParentHash,
+			}
+			response = append(response, item)
+		}
+
 		// Return the blocks as JSON.
 		ctx.JSON(200, gin.H{
-			"blocks": blocks,
+			"blocks": response,
 		})
 	})
+
 	server.GIN.GET("/blocks/:id", func(ctx *gin.Context) {
 		// Get the block id parameter.
 		id := ctx.Param("id")
@@ -43,9 +56,27 @@ func main() {
 		var block model.Block
 		server.DB.Where("id = ?", id).First(&block)
 
+		// Query the database for the transactions with the specified id.
+		var transactions []model.Transaction
+		server.DB.Where("block_id = ?", id).Find(&transactions)
+
+		// Create responses
+		var txHashes []string
+		for _, tx := range transactions {
+			txHashes = append(txHashes, tx.Hash)
+		}
+
+		response := map[string]interface{}{
+			"block_num":    block.Id,
+			"block_hash":   block.Hash,
+			"block_time":   block.Timestamp,
+			"parent_hash":  block.ParentHash,
+			"transactions": txHashes,
+		}
+
 		// Return the block as JSON.
 		ctx.JSON(200, gin.H{
-			"block": block,
+			"block": response,
 		})
 	})
 	server.GIN.GET("/transaction/:txHash", func(ctx *gin.Context) {
@@ -56,9 +87,20 @@ func main() {
 		var transaction model.Transaction
 		server.DB.Where("hash = ?", txHash).First(&transaction)
 
+		// Create responses
+		response := map[string]interface{}{
+			"tx_hash":    transaction.Hash,
+			"from":       transaction.From,
+			"to":         transaction.To,
+			"nonce":      transaction.Nonce,
+			"data":       transaction.Data,
+			"value":      transaction.Value,
+			"event_logs": "", // TO-DO: extract event log from data
+		}
+
 		// Return the transaction as JSON.
 		ctx.JSON(200, gin.H{
-			"transaction": transaction,
+			"transaction": response,
 		})
 	})
 
