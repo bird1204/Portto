@@ -60,7 +60,8 @@ func ScanBlocks(startBlock uint64, db *gorm.DB, rpcURL string) error {
 			// Save the transactions in the block to the database.
 			for _, tx := range block.Transactions() {
 				err = db.Create(&model.Transaction{
-					Hash: tx.Hash().Hex(),
+					Hash:    tx.Hash().Hex(),
+					BlockId: block.Number().Uint64(),
 					// From:     tx.From().Hex(),
 					To:    tx.To().Hex(),
 					Nonce: tx.Nonce(),
