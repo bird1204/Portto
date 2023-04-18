@@ -7,22 +7,24 @@ import (
 
 func main() {
 	server := initializer.Server{}
+	// NOTE: CHANGE TO YOUR OWNED DB
 	server.InitializeDB(
 		"mysql",     // driver
-		"root",      // Username
-		"rootroot",  // PWD
+		"username",  // Username
+		"password",  // PWD
 		"3306",      // Port
 		"localhost", // Host
 		"portto",    // DB name
 	)
 
-	// node url: https://polygon-mainnet.g.alchemy.com/v2/T4msPSgqhQshJuaZ5ZxZJIU2QrksAjQt / http://10.0.130.61:8545
-	server.InitializeEthClient("https://polygon-mainnet.g.alchemy.com/v2/T4msPSgqhQshJuaZ5ZxZJIU2QrksAjQt")
+	// NOTE: CHANGE TO YOUR OWNED NODE
+	server.InitializeEthClient("http://10.0.130.61:8545")
 
 	server.InitializeGin()
 	server.CreateBlocksRoute()
 	server.CreateTransactionsRoute()
 
+	// NOTE: update start block to a certain block
 	go scheduler.ScanBlocks(
 		server.EthClient, // ETH client
 		17074886,         // start block

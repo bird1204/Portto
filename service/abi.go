@@ -17,6 +17,7 @@ func GetContractAbiFromFile(client *ethclient.Client, contractAddress common.Add
 	filename := "abiData/" + contractAddress.Hex() + ".json"
 
 	// Check whether the system has ABI data
+	// If no, try to get ABI data from Etherscan and save the data to abiData/<contractAddress>.json
 	_, err := os.Stat(filename)
 	if os.IsNotExist(err) {
 		saveContractAbiFromEtherscan(client, contractAddress)
